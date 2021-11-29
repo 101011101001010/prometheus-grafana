@@ -1,0 +1,13 @@
+[Unit]
+Description=Blackbox exporter for Prometheus
+Documentation=https://prometheus.io/docs/introduction/overview/
+
+[Service]
+Restart=always
+User=prometheus
+AmbientCapabilities=CAP_NET_RAW
+EnvironmentFile=/etc/default/prometheus-blackbox-exporter
+ExecStart=/usr/bin/prometheus-blackbox-exporter $ARGS
+
+[Install]
+WantedBy=multi-user.target

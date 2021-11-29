@@ -1,0 +1,11 @@
+[Unit]
+Description=Promtail
+After=network.target
+
+[Service]
+Type=simple
+User=prometheus
+ExecStart=/etc/loki/promtail -config.file /etc/loki/promtail-config.yaml
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Smokeping Prober for Prometheus
+
+[Service]
+Restart=always
+User=prometheus
+AmbientCapabilities=CAP_NET_RAW
+ExecStart=/home/teow/go/bin/smokeping_prober wjayteo.com
+
+[Install]
+WantedBy=multi-user.target

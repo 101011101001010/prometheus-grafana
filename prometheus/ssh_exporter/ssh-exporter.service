@@ -1,0 +1,11 @@
+[Unit]
+Description=SSH Exporter for Prometheus
+
+[Service]
+Restart=always
+User=prometheus
+AmbientCapabilities=CAP_NET_RAW
+ExecStart=/home/teow/go/bin/ssh_exporter --config.file "/home/teow/go/bin/ssh_exporter.yaml"
+
+[Install]
+WantedBy=multi-user.target
