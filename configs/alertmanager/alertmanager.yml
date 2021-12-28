@@ -9,18 +9,15 @@ receivers:
   - name: 'gmail'
     email_configs:
       - to: wjayteo@gmail.com
-        from: alert.prometheus.wjayteo@gmail.com
+        from: alerts.prometheus.wjayteo@gmail.com
         smarthost: smtp.gmail.com:587
-        auth_username: alert.prometheus.wjayteo@gmail.com
-        auth_identity: alert.prometheus.wjayteo@gmail.com
+        auth_username: alerts.prometheus.wjayteo@gmail.com
+        auth_identity: alerts.prometheus.wjayteo@gmail.com
         auth_password: ptqndtvvuseshsln
         send_resolved: true
         headers:
-          subject: '{{ template "email.subject.text" }}'
-        html: '{{ template "email.message.html" }}'
-        
-templates:
-  - '/etc/alertmanager/templates/email.tmpl'
+          subject: '[{{ if eq .Status "firing" }}{{ .CommonLabels.severity }}{{ else }}RESOLVED{{ end }}] {{ .CommonAnnotations.title }}'
+        html: '{{ if eq .Status "firing" }}{{ .CommonAnnotations.summary }}{{ else }}Issue has been resolved.{{ end }}<br/><br/>Instance: {{ .CommonLabels.instance }}<br/>Job: {{ .CommonLabels.job }}<br/>Alert name: {{ .CommonLabels.alertname }}'
 
 inhibit_rules:
   - source_match:
