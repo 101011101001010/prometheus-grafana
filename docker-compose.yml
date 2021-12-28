@@ -19,6 +19,17 @@ services:
         command:
             - "-config.file=/etc/loki/loki.yml"
         
+    alertmanager:
+        image: prom/alertmanager:latest
+        ports:
+            - "9093:9093"
+        volumes:
+            - ./configs/alertmanager:/etc/alertmanager
+        container_name: alertmanager
+        restart: unless-stopped
+        command:
+            - "--config.file=/etc/alertmanager/alertmanager.yml"
+        
     prometheus:
         image: prom/prometheus:latest
         ports:

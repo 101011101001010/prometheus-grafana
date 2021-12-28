@@ -1,0 +1,2 @@
+{{ define "email.subject.text" }}[{{ if eq .Status "firing" }}{{ .CommonLabels.severity }}{{ else }}RESOLVED{{ end }}] {{ .CommonAnnotations.title }}{{ end }}
+{{ define "email.message.html" }}{{ if eq .Status "firing" }}{{ .CommonAnnotations.summary }}{{ else }}Issue has been resolved.{{ end }}<br/><br/>Instance: {{ .CommonLabels.instance }}<br/>Job: {{ .CommonLabels.job }}<br/>Alert name: {{ .CommonLabels.alertname }}{{ end }}

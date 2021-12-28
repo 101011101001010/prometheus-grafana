@@ -5,7 +5,8 @@ groups:
         expr: node_unid_users > 0
         for: 1m
         annotations:
-          title: 'Unidentified users logged into {{ $labels.instance }}'
+          title: 'Unidentified user(s) - {{ $labels.instance }}'
+          summary: '{{ $value }} unidentifed user login(s) detected.'
         labels:
           severity: 'Critical'
           
@@ -13,40 +14,116 @@ groups:
         expr: node_vuln_ports > 0
         for: 1m
         annotations:
-          title: 'A vulnerable port is opened on {{ $labels.instance }}'
+          title: 'Vulerable port(s) - {{ $labels.instance }}'
+          summary: '{{ $value }} vulnerable port(s) are in use.'
         labels:
           severity: 'Critical'
           
-      - alert: InstanceDown
-        expr: up == 0
-        for: 1m
+      - alert: check_all_discs_warning
+        expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) * 100 < 20
+        for: 5m
         annotations:
-          title: 'Host is down'
-        labels:
-          severity: 'Critical'
-
-      - alert: HostMemoryUsage
-        expr: (((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100) > 80
-        for: 1m
-        annotations:
-          title: 'Memory usage > 80% for host {{ $labels.instance }}'
+          title: 'Disk space - {{ $labels.instance }}'
+          summary: 'Host has {{ $value }}% disk space available.'
         labels:
           severity: 'Warning'
-
-      - alert: HostDiskSpaceUsage
-        expr: ((sum(max by (device) (node_filesystem_size_bytes{fstype!=""} - node_filesystem_avail_bytes{fstype!=""})) / sum(max by (device) (node_filesystem_size_bytes{fstype!=""}))) * 100) > 80
-        for: 1m
+          
+      - alert: check_all_discs_critical
+        expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) * 100 < 10
+        for: 5m
         annotations:
-          title: 'Disk usage > 80% for host {{ $labels.instance }}'
-        labels:
-          severity: 'Warning' 
-
-      - alert: SSHFailure
-        expr: ssh_failure == 1
-        for: 1m
-        annotations:
-          title: 'SSH Failed: {{ $labels.reason }} for host {{ $labels.instance }}'
+          title: 'Disk space - {{ $labels.instance }}'
+          summary: 'Host has {{ $value }}% disk space available.'
         labels:
           severity: 'Critical'
-
+          
+      - alert: check_load1_warning
+        expr: node_load1 > 5.0
+        for: 5m
+        annotations:
+          title: 'CPU load (1m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (1m) for host is {{ $value }}.'
+        labels:
+          severity: 'Warning'
+          
+      - alert: check_load1_critical
+        expr: node_load1 > 10.0
+        for: 5m
+        annotations:
+          title: 'CPU load (1m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (1m) for host is {{ $value }}.'
+        labels:
+          severity: 'Critical'
+          
+      - alert: check_load5_warning
+        expr: node_load5 > 4.0
+        for: 5m
+        annotations:
+          title: 'CPU load (5m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (5m) for host is {{ $value }}.'
+        labels:
+          severity: 'Warning'
+          
+      - alert: check_load5_critical
+        expr: node_load5 > 6.0
+        for: 5m
+        annotations:
+          title: 'CPU load (5m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (5m) for host is {{ $value }}.'
+        labels:
+          severity: 'Critical'
+          
+      - alert: check_load15_warning
+        expr: node_load15 > 3.0
+        for: 5m
+        annotations:
+          title: 'CPU load (15m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (15m) for host is {{ $value }}.'
+        labels:
+          severity: 'Warning'
+          
+      - alert: check_load15_critical
+        expr: node_load15 > 4.0
+        for: 5m
+        annotations:
+          title: 'CPU load (15m) - {{ $labels.instance }}'
+          summary: 'Average CPU load (15m) for host is {{ $value }}.'
+        labels:
+          severity: 'Critical'
+          
+      - alert: check_processes_warning
+        expr: sum by (instance) (node_processes_state) > 310
+        for: 5m
+        annotations:
+          title: 'Processes - {{ $labels.instance }}'
+          summary: 'Host has {{ $value }} processes.'
+        labels:
+          severity: 'Warning'
+          
+      - alert: check_processes_critical
+        expr: sum by (instance) (node_processes_state) > 400
+        for: 5m
+        annotations:
+          title: 'Processes - {{ $labels.instance }}'
+          summary: 'Host has {{ $value }} processes.'
+        labels:
+          severity: 'Critical'
+          
+      - alert: check_users_warning
+        expr: node_current_users > 20
+        for: 5m
+        annotations:
+          title: 'Users - {{ $labels.instance }}'
+          summary: 'Host currently has {{ $value }} users logged in.'
+        labels:
+          severity: 'Warning'
+          
+      - alert: check_users_warning
+        expr: node_current_users > 50
+        for: 5m
+        annotations:
+          title: 'Users - {{ $labels.instance }}'
+          summary: 'Host currently has {{ $value }} users logged in.'
+        labels:
+          severity: 'Critical'
 

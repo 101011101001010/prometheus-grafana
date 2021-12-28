@@ -9,12 +9,18 @@ receivers:
   - name: 'gmail'
     email_configs:
       - to: wjayteo@gmail.com
-        from: wjayteo@gmail.com
+        from: alert.prometheus.wjayteo@gmail.com
         smarthost: smtp.gmail.com:587
-        auth_username: wjayteo@gmail.com
-        auth_identity: wjayteo@gmail.com
-        auth_password: eyrpvmqqjqxemrcd
+        auth_username: alert.prometheus.wjayteo@gmail.com
+        auth_identity: alert.prometheus.wjayteo@gmail.com
+        auth_password: ptqndtvvuseshsln
         send_resolved: true
+        headers:
+          subject: '{{ template "email.subject.text" }}'
+        html: '{{ template "email.message.html" }}'
+        
+templates:
+  - '/etc/alertmanager/templates/email.tmpl'
 
 inhibit_rules:
   - source_match:
