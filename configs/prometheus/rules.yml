@@ -1,6 +1,22 @@
 groups:
   - name: AllInstances
     rules:
+      - alert: UnidentifiedUsers
+        expr: node_unid_users > 0
+        for: 1m
+        annotations:
+          title: 'Unidentified users logged into {{ $labels.instance }}'
+        labels:
+          severity: 'Critical'
+          
+      - alert: VulnerablePortOpened
+        expr: node_vuln_ports > 0
+        for: 1m
+        annotations:
+          title: 'A vulnerable port is opened on {{ $labels.instance }}'
+        labels:
+          severity: 'Critical'
+          
       - alert: InstanceDown
         expr: up == 0
         for: 1m
@@ -13,7 +29,7 @@ groups:
         expr: (((node_memory_MemTotal_bytes - node_memory_MemFree_bytes - node_memory_Buffers_bytes - node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100) > 80
         for: 1m
         annotations:
-          title: 'Memory usage > 80%'
+          title: 'Memory usage > 80% for host {{ $labels.instance }}'
         labels:
           severity: 'Warning'
 
@@ -21,7 +37,7 @@ groups:
         expr: ((sum(max by (device) (node_filesystem_size_bytes{fstype!=""} - node_filesystem_avail_bytes{fstype!=""})) / sum(max by (device) (node_filesystem_size_bytes{fstype!=""}))) * 100) > 80
         for: 1m
         annotations:
-          title: 'Disk usage > 80%'
+          title: 'Disk usage > 80% for host {{ $labels.instance }}'
         labels:
           severity: 'Warning' 
 
@@ -29,15 +45,7 @@ groups:
         expr: ssh_failure == 1
         for: 1m
         annotations:
-          title: 'SSH Failed: {{ $labels.reason }}'
-        labels:
-          severity: 'Critical'
-
-      - alert: ManyProcesses
-        expr: sum(node_processes_state) > 500
-        for: 1m
-        annotations:
-          title: 'Processes count > 500'
+          title: 'SSH Failed: {{ $labels.reason }} for host {{ $labels.instance }}'
         labels:
           severity: 'Critical'
 
