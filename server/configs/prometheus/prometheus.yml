@@ -1,5 +1,9 @@
 global:
   scrape_interval: 10s
+  
+remote_write:
+  - url: https://metric-api.newrelic.com/prometheus/v1/write?prometheus_server=prometheus_aiops
+    bearer_token: cd24e4b95bc43a4c0efc8e38629dfecb21b4NRAL
 
 rule_files:
   - rules.yml
@@ -38,7 +42,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9115
+        replacement: host.docker.internal:9115
 
   - job_name: 'smokeping'
     metrics_path: /metrics
@@ -52,7 +56,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9374
+        replacement: host.docker.internal:9374
 
   - job_name: 'ssh'
     metrics_path: /ssh
@@ -68,7 +72,7 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 127.0.0.1:9312
+        replacement: host.docker.internal:9312
       - source_labels: [module]
         target_label: __param_module
     metric_relabel_configs:

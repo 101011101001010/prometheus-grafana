@@ -1,6 +1,6 @@
 modules:
   default:
     user: wj
-    private_key: /home/teow/go/bin/id_key
+    private_key: /etc/ssh-exporter/id_key
     timeout: 5
 

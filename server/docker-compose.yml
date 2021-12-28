@@ -1,0 +1,60 @@
+services:
+    grafana:
+        image: grafana/grafana:latest
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./configs/grafana:/var/lib/grafana
+        container_name: grafana
+        restart: unless-stopped
+            
+    loki:
+        image: grafana/loki:latest
+        ports:
+            - "3100:3100"
+        volumes:
+            - ./configs/loki:/etc/loki
+        container_name: loki
+        restart: unless-stopped
+        command:
+            - "-config.file=/etc/loki/loki.yml"
+        
+    prometheus:
+        image: prom/prometheus:latest
+        ports:
+            - "9090:9090"
+        volumes:
+            - ./configs/prometheus:/etc/prometheus
+        container_name: prometheus
+        restart: unless-stopped
+            
+    smokeping-prober:
+        image: quay.io/superq/smokeping-prober-linux-amd64:latest
+        ports:
+            - "9374:9374"
+        container_name: smokeping-prober
+        restart: unless-stopped
+        command:
+            - "157.245.207.125"
+            
+    blackbox-exporter:
+        image: prom/blackbox-exporter:latest
+        ports:
+            - "9115:9115"
+        volumes:
+            - ./configs/blackbox-exporter:/etc/blackbox-exporter
+        container_name: blackbox-exporter
+        restart: unless-stopped
+        command:
+            - "--config.file=/etc/blackbox-exporter/blackbox-exporter.yml"
+            
+    ssh-exporter:
+        image: treydock/ssh_exporter:latest
+        ports:
+            - "9312:9312"
+        volumes:
+            - ./configs/ssh-exporter:/etc/ssh-exporter
+        container_name: ssh-exporter
+        restart: unless-stopped
+        command:
+            - "--config.file=/etc/ssh-exporter/ssh-exporter.yml"
