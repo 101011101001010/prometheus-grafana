@@ -73,3 +73,9 @@ scrape_configs:
     metric_relabel_configs:
       - regex: "^(module)$"
         action: labeldrop
+        
+  - job_name: 'perfsonar'
+    scrape_interval: 60s
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['101011101001010.ddnsfree.com:5000']
