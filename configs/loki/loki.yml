@@ -25,6 +25,13 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+        
+ingester:
+  max_chunk_age: 168h
 
 ruler:
   alertmanager_url: http://localhost:9093
+  
+limits_config:
+  reject_old_samples: false
+  unordered_writes: true

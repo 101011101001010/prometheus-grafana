@@ -4,7 +4,7 @@ services:
         ports:
             - "3000:3000"
         volumes:
-            - ./configs/grafana:/var/lib/grafana
+            - ./data/grafana:/var/lib/grafana
         container_name: grafana
         restart: unless-stopped
             
@@ -14,6 +14,7 @@ services:
             - "3100:3100"
         volumes:
             - ./configs/loki:/etc/loki
+            - ./data/loki:/tmp/loki
         container_name: loki
         restart: unless-stopped
         command:
