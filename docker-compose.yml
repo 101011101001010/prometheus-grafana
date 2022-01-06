@@ -71,11 +71,11 @@ services:
         command:
             - "--config.file=/etc/ssh-exporter/ssh-exporter.yml"
             
-#    perfsonar-exporter:
-#        image: wjayteo/perfsonar-exporter:latest
-#        ports:
-#            - "5000:5000"
-#        container_name: perfsonar-exporter
-#        restart: unless-stopped
-#        environment:
-#            - url=192.168.1.129
+    perfsonar-exporter:
+        image: wjayteo/perfsonar-exporter:latest
+        ports:
+            - "5000:5000"
+        container_name: perfsonar-exporter
+        restart: unless-stopped
+        environment:
+            - url=192.168.1.129
