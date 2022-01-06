@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 import flask
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -239,6 +240,17 @@ async def home():
 
 
 if __name__ == "__main__":
+    arguments: list = sys.argv
+
+    if len(arguments) > 1:
+        url = arguments[1]
+
+    url = url.strip()
+
+    if not url.startswith("http://") and not url.startswith("https://"):
+        url = "http://" + url
+
+    print("URL = " + url)
     asyncio.run(a())
     metrics.init_app(app)
     app.run(host="0.0.0.0")

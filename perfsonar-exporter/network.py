@@ -4,10 +4,13 @@ import aiohttp
 
 
 async def _get_response(session, url: str):
-    async with session.get(url) as resp:
-        if resp.status != 200:
-            return None
-        return await resp.json()
+    try:
+        async with session.get(url, timeout=5) as resp:
+            if resp.status != 200:
+                return None
+            return await resp.json()
+    except Exception:
+        return None
 
 
 async def get_response(url: str, headers=None):
