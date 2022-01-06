@@ -21,4 +21,4 @@ venv/
 
 .venv
 id_key
-.bat
+*.bat
