@@ -1,5 +1,6 @@
 import asyncio
-import sys
+import os
+import time
 
 import flask
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -36,7 +37,7 @@ statistic_types: list = [
 
 time_range: int = 1800
 overall_count: int = 0
-url: str = "http://192.168.15.129"
+url: str = "http://192.168.1.129"
 ret_text: str = "<body style='background: black; color: white;'>" \
                 "<div style='font-family: Courier New; font-size: 10pt;'>" \
                 "</div>" \
@@ -99,13 +100,14 @@ def gather_uris(tool: str, metadata_key: str, events: list) -> tuple:
     return uri_keys, uri_list
 
 
-async def process_test(tool: str, source: str, destination: str, source_host: str, destination_host: str, metadata_key: str, events: list, index: int):
+async def process_test(tool: str, source: str, destination: str, source_host: str, destination_host: str, metadata_key: str, events: list, index: int, current_time: int):
     uri_keys, uri_list = gather_uris(tool, metadata_key, events)
 
     if uri_keys is None or uri_list is None:
         return
 
     results: list = []
+    timestamp = None
 
     for uri in uri_list:
         if uri is not None:
@@ -120,13 +122,16 @@ async def process_test(tool: str, source: str, destination: str, source_host: st
         if isinstance(result, list):
             if len(result) > 0:
                 latest_data = max(result, key=lambda x: x["ts"])
+                timestamp = latest_data.get("ts")
                 latest_data = latest_data.get("val")
             else:
                 latest_data = None
         else:
             latest_data = result
+            timestamp = latest_data.get("ts")
 
-        if latest_data is None:
+        if latest_data is None or current_time - timestamp > 604800:
+            print("Skipped")
             continue
 
         if uri_key == "histogram-owdelay" or uri_key == "histogram-rtt":
@@ -188,6 +193,7 @@ async def a():
     indices: dict = {}
     count: int = 0
     index_tracker: int = 0
+    current_time = int(time.time())
 
     for test in results:
         tool: str = test.get("tool-name")
@@ -212,7 +218,7 @@ async def a():
 
         count += 1
         print(f"-- Processing Test #{count}: {tool} ({source} <----> {destination})")
-        await process_test(tool, source, destination, source_host, destination_host, metadata_key, events, index)
+        await process_test(tool, source, destination, source_host, destination_host, metadata_key, events, index, current_time)
         await asyncio.sleep(0.25)
 
     print("Run completed.\n")
@@ -234,23 +240,24 @@ def skip():
 
 
 @app.route("/")
-async def home():
+def home():
     return "<h1>PerfSONAR Exporter</h1>" \
            "<a href=\"metrics\">Metrics</a>"
 
 
 if __name__ == "__main__":
-    arguments: list = sys.argv
+    # arguments: list = sys.argv
+    #
+    # if len(arguments) > 1:
+    #     url = arguments[1]
 
-    if len(arguments) > 1:
-        url = arguments[1]
-
-    url = url.strip()
+    env_url = os.getenv("url", "192.168.15.129")
+    url = env_url.strip()
 
     if not url.startswith("http://") and not url.startswith("https://"):
         url = "http://" + url
 
     print("URL = " + url)
-    asyncio.run(a())
     metrics.init_app(app)
+    asyncio.run(a())
     app.run(host="0.0.0.0")
