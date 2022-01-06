@@ -75,7 +75,7 @@ def gather_uris(tool: str, metadata_key: str, events: list) -> tuple:
         if tool == "pscheduler/iperf3" and event_type not in iperf3_types:
             continue
 
-        uri_list.append(url + base_uri + f"?time-range={time_range}")
+        uri_list.append(url + base_uri + f"?time-range=604800")
         uri_keys.append(base_uri.replace(f"/esmond/perfsonar/archive/{metadata_key}/", "").replace("/base", ""))
         summaries: list = event.get("summaries")
 
@@ -129,9 +129,8 @@ async def process_test(tool: str, source: str, destination: str, source_host: st
         else:
             latest_data = result
             timestamp = latest_data.get("ts")
-
-        if latest_data is None or current_time - timestamp > 604800:
-            print("Skipped")
+        
+        if latest_data is None or (timestamp is not None and current_time - timestamp > 604800):
             continue
 
         if uri_key == "histogram-owdelay" or uri_key == "histogram-rtt":
@@ -251,7 +250,7 @@ if __name__ == "__main__":
     # if len(arguments) > 1:
     #     url = arguments[1]
 
-    env_url = os.getenv("url", "192.168.15.129")
+    env_url = os.getenv("url", "192.168.1.129")
     url = env_url.strip()
 
     if not url.startswith("http://") and not url.startswith("https://"):
