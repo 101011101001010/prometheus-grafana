@@ -17,7 +17,8 @@ alerting:
 scrape_configs:
   - job_name: 'node_exporter_metrics'
     static_configs:
-      - targets: ['157.245.207.125:9100']
+      - targets:
+        - 157.245.207.125:9100
 
   - job_name: 'blackbox'
     metrics_path: /probe
