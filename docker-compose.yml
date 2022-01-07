@@ -37,8 +37,13 @@ services:
             - "9090:9090"
         volumes:
             - ./configs/prometheus:/etc/prometheus
+            - ./data/prometheus:/data
         container_name: prometheus
         restart: unless-stopped
+        command:
+            - "--storage.tsdb.path=/data"
+            - "--storage.tsdb.retention.time=365d"
+            - "--config.file=/etc/prometheus/prometheus.yml"
             
     smokeping-prober:
         image: quay.io/superq/smokeping-prober-linux-amd64:latest
